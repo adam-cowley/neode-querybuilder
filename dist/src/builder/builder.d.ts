@@ -9,6 +9,8 @@ export default class Builder<T> {
     statements: Array<Statement<T>>;
     setParam(key: string, value: any): Builder<T>;
     match<T>(alias: string, labels?: Array<string> | string, properties?: object): Builder<T>;
+    call(fn: string, ...parameters: any[]): Builder<T>;
+    yield(...items: string[]): Builder<T>;
     optionalMatch<T>(alias: string, labels?: Array<string> | string, properties?: object): Builder<T>;
     create<T>(alias: string, labels?: Array<string> | string, properties?: object): Builder<T>;
     merge<T>(alias: string, labels?: Array<string> | string, properties?: object): Builder<T>;

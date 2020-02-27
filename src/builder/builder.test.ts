@@ -1016,6 +1016,25 @@ describe('Builder', () => {
         })
     })
 
+    describe('CALL', () => {
+        it('should call some apoc procedure and yield values', () => {
+            const builder = new Builder()
+
+            const cypher = builder.call('apoc.periodic.iterate', 'MATCH (n) RETURN n', 'DETACH DELETE n', { iterateList: true, parallel: true, batchSize: 1000 })
+                .yield('total', 'batches', 'timeTaken')
+                .whereGreaterThan('total', 10)
+                .return('total', 'batches', 'timeTaken')
+                .toString()
+
+            expect(cypher).toEqual([
+                `CALL apoc.periodic.iterate("MATCH (n) RETURN n", "DETACH DELETE n", {iterateList: true, parallel: true, batchSize: 1000})`,
+                `YIELD total, batches, timeTaken`,
+                `WHERE (total > $total)`,
+                `RETURN total, batches, timeTaken`,
+            ].join('\n'))
+        })
+    })
+
     describe('::setParam', () => {
         test('should set a param', () => {
             const builder = new Builder()

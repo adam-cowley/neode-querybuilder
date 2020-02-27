@@ -1,4 +1,11 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -20,6 +27,25 @@ var Builder = /** @class */ (function () {
     Builder.prototype.match = function (alias, labels, properties) {
         this.addStatement(constants_1.StatementPrefix.MATCH);
         this.currentStatement().match(alias, labels, this.aliasProperties(alias, properties));
+        return this;
+    };
+    Builder.prototype.call = function (fn) {
+        var _a;
+        var parameters = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            parameters[_i - 1] = arguments[_i];
+        }
+        this.addStatement(constants_1.StatementPrefix.CALL);
+        (_a = this.currentStatement()).call.apply(_a, __spreadArrays([fn], parameters));
+        return this;
+    };
+    Builder.prototype.yield = function () {
+        var _a;
+        var items = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            items[_i] = arguments[_i];
+        }
+        (_a = this.currentStatement()).yield.apply(_a, items);
         return this;
     };
     Builder.prototype.optionalMatch = function (alias, labels, properties) {
@@ -126,51 +152,51 @@ var Builder = /** @class */ (function () {
         return this;
     };
     Builder.prototype.whereLike = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.LIKE, constants_1.Prefix.AND, false);
+        this.currentStatement().whereLike(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereNotLike = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.LIKE, constants_1.Prefix.AND, true);
+        this.currentStatement().whereNotLike(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereStartsWith = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.STARTS_WITH, constants_1.Prefix.AND, false);
+        this.currentStatement().whereStartsWith(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereNotStartsWith = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.STARTS_WITH, constants_1.Prefix.AND, true);
+        this.currentStatement().whereNotStartsWith(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereEndsWith = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.ENDS_WITH, constants_1.Prefix.AND, false);
+        this.currentStatement().whereEndsWith(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereNotEndsWith = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.ENDS_WITH, constants_1.Prefix.AND, true);
+        this.currentStatement().whereNotEndsWith(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereContains = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.CONTAINS, constants_1.Prefix.AND, false);
+        this.currentStatement().whereContains(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereNotContains = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.CONTAINS, constants_1.Prefix.AND, true);
+        this.currentStatement().whereNotContains(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereGreaterThan = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.GREATER_THAN, constants_1.Prefix.AND, false);
+        this.currentStatement().whereGreaterThan(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereGreaterThanOrEqual = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.GREATER_THAN_OR_EQUAL, constants_1.Prefix.AND, false);
+        this.currentStatement().whereGreaterThanOrEqual(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereLessThan = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.LESS_THAN, constants_1.Prefix.AND, false);
+        this.currentStatement().whereLessThan(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereLessThanOrEqual = function (key, value) {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), constants_1.Operator.LESS_THAN_OR_EQUAL, constants_1.Prefix.AND, false);
+        this.currentStatement().whereLessThanOrEqual(key, this.aliasProperty(null, key, value).getParam());
         return this;
     };
     Builder.prototype.whereBetween = function (key, floor, ceiling) {

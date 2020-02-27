@@ -28,6 +28,20 @@ export default class Builder<T> {
         return this
     }
 
+    call(fn: string, ...parameters: any[]) : Builder<T> {
+        this.addStatement(StatementPrefix.CALL)
+
+        this.currentStatement().call(fn, ...parameters)
+
+        return this
+    }
+
+    yield(...items: string[]) : Builder<T> {
+        this.currentStatement().yield(...items)
+
+        return this
+    }
+
     optionalMatch<T>(alias: string, labels?: Array<string> | string, properties?: object) : Builder<T> {
         this.addStatement(StatementPrefix.OPTIONAL_MATCH)
 
@@ -151,73 +165,73 @@ export default class Builder<T> {
     }
 
     whereLike(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.LIKE, Prefix.AND, false)
+        this.currentStatement().whereLike(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereNotLike(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.LIKE, Prefix.AND, true)
+        this.currentStatement().whereNotLike(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereStartsWith(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.STARTS_WITH, Prefix.AND, false)
+        this.currentStatement().whereStartsWith(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereNotStartsWith(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.STARTS_WITH, Prefix.AND, true)
+        this.currentStatement().whereNotStartsWith(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereEndsWith(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.ENDS_WITH, Prefix.AND, false)
+        this.currentStatement().whereEndsWith(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereNotEndsWith(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.ENDS_WITH, Prefix.AND, true)
+        this.currentStatement().whereNotEndsWith(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereContains(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.CONTAINS, Prefix.AND, false)
+        this.currentStatement().whereContains(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereNotContains(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.CONTAINS, Prefix.AND, true)
+        this.currentStatement().whereNotContains(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereGreaterThan(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.GREATER_THAN, Prefix.AND, false)
+        this.currentStatement().whereGreaterThan(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereGreaterThanOrEqual(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.GREATER_THAN_OR_EQUAL, Prefix.AND, false)
+        this.currentStatement().whereGreaterThanOrEqual(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereLessThan(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.LESS_THAN, Prefix.AND, false)
+        this.currentStatement().whereLessThan(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }
 
     whereLessThanOrEqual(key: string, value: any) : Builder<T> {
-        this.currentStatement().where(key, this.aliasProperty(null, key, value).getParam(), Operator.LESS_THAN_OR_EQUAL, Prefix.AND, false)
+        this.currentStatement().whereLessThanOrEqual(key, this.aliasProperty(null, key, value).getParam())
 
         return this
     }

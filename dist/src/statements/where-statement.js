@@ -54,6 +54,54 @@ var WhereStatement = /** @class */ (function () {
         this.predicates.push(new where_between_1.default(alias, floor, ceiling));
         return this;
     };
+    WhereStatement.prototype.whereLike = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.LIKE));
+        return this;
+    };
+    WhereStatement.prototype.whereNotLike = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.LIKE).setNegative());
+        return this;
+    };
+    WhereStatement.prototype.whereStartsWith = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.STARTS_WITH));
+        return this;
+    };
+    WhereStatement.prototype.whereNotStartsWith = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.STARTS_WITH).setNegative());
+        return this;
+    };
+    WhereStatement.prototype.whereEndsWith = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.ENDS_WITH));
+        return this;
+    };
+    WhereStatement.prototype.whereNotEndsWith = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.ENDS_WITH).setNegative());
+        return this;
+    };
+    WhereStatement.prototype.whereContains = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.CONTAINS));
+        return this;
+    };
+    WhereStatement.prototype.whereNotContains = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.CONTAINS).setNegative());
+        return this;
+    };
+    WhereStatement.prototype.whereGreaterThan = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.GREATER_THAN));
+        return this;
+    };
+    WhereStatement.prototype.whereGreaterThanOrEqual = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.GREATER_THAN_OR_EQUAL));
+        return this;
+    };
+    WhereStatement.prototype.whereLessThan = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.LESS_THAN));
+        return this;
+    };
+    WhereStatement.prototype.whereLessThanOrEqual = function (key, param) {
+        this.predicates.push(new predicate_1.default(key, param, constants_1.Operator.LESS_THAN_OR_EQUAL));
+        return this;
+    };
     WhereStatement.prototype.or = function (alias, param, operator) {
         this.predicates.push(new predicate_1.default(alias, param, operator, constants_1.Prefix.OR));
         return this;

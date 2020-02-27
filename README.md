@@ -15,7 +15,17 @@ npm install --save @neode/querybuilder
 
 ### Usage
 
-The builder has a number of methods
+The builder has a number of methods that can be used to build up a cypher query.  Say you want a query like:
+
+```cypher
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+WHERE m.released >= 2003
+RETURN p, m
+LIMIT 10
+```
+
+The javascript code would look something like:
+
 
 ```js
 import Builder, { Direction } from '@neode/querybuilder'
@@ -28,6 +38,7 @@ builder.match('p', 'Person', { name: 'Keanu Reeves' })
     .to('m', 'Movie')
     .whereGreaterThanOrEqual('m.released', 2003)
     .return('p', 'm')
+    .limit(10)
 
 // Get the Cypher statement as a string
 const queryAsString = builder.toString()
@@ -52,12 +63,72 @@ neode.cypher(query, params)
     .then(node => console.log( node.id() ))
 ```
 
+### Simple Queries
+
+By default, the builder will produce a single where clause:
+
+```js
+builder.match('n', 'Person')
+    .where('n.name', 'Keanu Reeves')
+    .or('n.name', 'Laurence Fishburn')
+    .toString()
+```
+
+Will produce something along the lines of:
+
+```cypher
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+WHERE (n.name = $n_name1 OR n.name = $n_name2)
+RETURN p, m
+LIMIT 10
+```
+
+### More complex Where clauses
+
+If you need something more complex, you can also pass an instance of the `WhereStatement`:
+
+```js
+// First add the parameters to the builder
+builder.setParam('matrixReleasedAfter', 2000)
+builder.setParam('atlasReleasedBefore', 2000)
+
+// Then create new instances of WhereStatement using those parameters
+builder
+    .match('p', 'Person', { name: 'Keanu Reeves' })
+    .relationship('ACTED_IN', Direction.OUTGOING)
+    .to('m', 'Movie')
+    .where(
+        (new WhereStatement())
+            .whereContains('m.title', 'Matrix')
+            .whereGreaterThan('m.released', 'matrixReleasedBefore') // Reference set above
+    )
+    .or(
+        (new WhereStatement())
+            .whereEndsWith('m.title', 'Atlas')
+            .whereLessThanOrEqual('m.released', 'atlasReleasedBefore') // Reference set above
+    )
+    .return('p', 'm')
+    .limit(10)
+```
+
+This will produce:
+
+```cypher
+MATCH (p:Person {name: $p_name})-[:ACTED_IN]->(m:Movie)
+WHERE ((m.title CONTAINS $Matrix AND m.released > $matrixReleasedBefore))
+OR ((m.title ENDS WITH $Atlas AND m.released <= $atlasReleasedBefore))
+RETURN p, m
+LIMIT 10
+```
+
 ## Reference
 
 ```ts
 export default class Builder<T> {
     setParam(key: string, value: any): Builder<T>;
     match<T>(alias: string, labels?: Array<string> | string, properties?: object): Builder<T>;
+    call(fn: string, ...parameters: any[]): Builder<T>;
+    yield(...items: string[]): Builder<T>;
     optionalMatch<T>(alias: string, labels?: Array<string> | string, properties?: object): Builder<T>;
     create<T>(alias: string, labels?: Array<string> | string, properties?: object): Builder<T>;
     merge<T>(alias: string, labels?: Array<string> | string, properties?: object): Builder<T>;
@@ -66,6 +137,7 @@ export default class Builder<T> {
     onCreateSet(key: string, value: any): Builder<T>;
     onMatchSet(key: string, value: any): Builder<T>;
     set(key: string, value: any): Builder<T>;
+    remove(...values: string[]): this;
     setAppend(key: string, value: object): Builder<T>;
     where(key: string | WhereStatement | object, value?: any | undefined): Builder<T>;
     whereNot(key: string | object, value?: any | undefined): Builder<T>;

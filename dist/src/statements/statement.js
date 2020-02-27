@@ -10,6 +10,7 @@ var with_statement_1 = __importDefault(require("./with-statement"));
 var order_by_1 = __importDefault(require("./order-by"));
 var relationship_1 = __importDefault(require("../relationship"));
 var set_property_1 = __importDefault(require("./set-property"));
+var call_statement_1 = __importDefault(require("./call-statement"));
 var Statement = /** @class */ (function () {
     function Statement(prefix) {
         this.deleteValues = [];
@@ -19,6 +20,7 @@ var Statement = /** @class */ (function () {
         this.onMatchSetValues = [];
         this.setValues = [];
         this.returnValues = [];
+        this.yieldValues = [];
         // TODO: replace any
         this.pattern = [];
         this.predicates = [new where_statement_1.default(constants_1.Condition.WHERE)];
@@ -28,11 +30,29 @@ var Statement = /** @class */ (function () {
     Statement.prototype.lastPredicate = function () {
         return this.predicates[this.predicates.length - 1];
     };
+    Statement.prototype.call = function (fn) {
+        var parameters = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            parameters[_i - 1] = arguments[_i];
+        }
+        this.pattern.push(new call_statement_1.default(fn, parameters));
+        return this;
+    };
+    Statement.prototype.yield = function () {
+        var items = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            items[_i] = arguments[_i];
+        }
+        this.yieldValues = this.yieldValues.concat(items);
+        return this;
+    };
     Statement.prototype.with = function (items) {
         this.pattern.push(new with_statement_1.default(items));
+        return this;
     };
     Statement.prototype.match = function (alias, labels, properties) {
         this.pattern.push(new match_statement_1.default(alias, labels, properties));
+        return this;
     };
     Statement.prototype.relationship = function (type, direction, alias, properties, degrees) {
         this.pattern.push(new relationship_1.default(type, direction, alias, properties, degrees));
@@ -103,6 +123,54 @@ var Statement = /** @class */ (function () {
         this.lastPredicate().whereBetween(key, floor, ceiling);
         return this;
     };
+    Statement.prototype.whereLike = function (key, param) {
+        this.lastPredicate().whereLike(key, param);
+        return this;
+    };
+    Statement.prototype.whereNotLike = function (key, param) {
+        this.lastPredicate().whereNotLike(key, param);
+        return this;
+    };
+    Statement.prototype.whereStartsWith = function (key, param) {
+        this.lastPredicate().whereStartsWith(key, param);
+        return this;
+    };
+    Statement.prototype.whereNotStartsWith = function (key, param) {
+        this.lastPredicate().whereNotStartsWith(key, param);
+        return this;
+    };
+    Statement.prototype.whereEndsWith = function (key, param) {
+        this.lastPredicate().whereEndsWith(key, param);
+        return this;
+    };
+    Statement.prototype.whereNotEndsWith = function (key, param) {
+        this.lastPredicate().whereNotEndsWith(key, param);
+        return this;
+    };
+    Statement.prototype.whereContains = function (key, param) {
+        this.lastPredicate().whereContains(key, param);
+        return this;
+    };
+    Statement.prototype.whereNotContains = function (key, param) {
+        this.lastPredicate().whereNotContains(key, param);
+        return this;
+    };
+    Statement.prototype.whereGreaterThan = function (key, param) {
+        this.lastPredicate().whereGreaterThan(key, param);
+        return this;
+    };
+    Statement.prototype.whereGreaterThanOrEqual = function (key, param) {
+        this.lastPredicate().whereGreaterThanOrEqual(key, param);
+        return this;
+    };
+    Statement.prototype.whereLessThan = function (key, param) {
+        this.lastPredicate().whereLessThan(key, param);
+        return this;
+    };
+    Statement.prototype.whereLessThanOrEqual = function (key, param) {
+        this.lastPredicate().whereLessThanOrEqual(key, param);
+        return this;
+    };
     Statement.prototype.orderBy = function (key, order) {
         if (order === void 0) { order = constants_1.Order.ASC; }
         this.order.push(new order_by_1.default(key, order));
@@ -127,6 +195,10 @@ var Statement = /** @class */ (function () {
         // Original Pattern
         if (this.pattern.length) {
             output.push(this.prefix + " " + this.pattern.map(function (value) { return value.toString(); }).join(''));
+        }
+        // Yield?
+        if (this.yieldValues.length) {
+            output.push("YIELD " + this.yieldValues.map(function (value) { return value.toString(); }).join(', '));
         }
         // Where clauses
         if (this.predicates.length) {
@@ -176,7 +248,7 @@ var Statement = /** @class */ (function () {
         }
         // Limit
         if (this.limitRows !== undefined) {
-            output.push("LIMIT " + this.skipRows);
+            output.push("LIMIT " + this.limitRows);
         }
         return output.join('\n');
     };

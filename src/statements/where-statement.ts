@@ -65,6 +65,78 @@ export default class WhereStatement {
         return this
     }
 
+    whereLike(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.LIKE) )
+
+        return this
+    }
+
+    whereNotLike(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.LIKE).setNegative() )
+
+        return this
+    }
+
+    whereStartsWith(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.STARTS_WITH) )
+
+        return this
+    }
+
+    whereNotStartsWith(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.STARTS_WITH).setNegative() )
+
+        return this
+    }
+
+    whereEndsWith(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.ENDS_WITH) )
+
+        return this
+    }
+
+    whereNotEndsWith(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.ENDS_WITH).setNegative() )
+
+        return this
+    }
+
+    whereContains(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.CONTAINS) )
+
+        return this
+    }
+
+    whereNotContains(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.CONTAINS).setNegative() )
+
+        return this
+    }
+
+    whereGreaterThan(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.GREATER_THAN) )
+
+        return this
+    }
+
+    whereGreaterThanOrEqual(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.GREATER_THAN_OR_EQUAL) )
+
+        return this
+    }
+
+    whereLessThan(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.LESS_THAN) )
+
+        return this
+    }
+
+    whereLessThanOrEqual(key: string, param: string) : WhereStatement {
+        this.predicates.push( new Predicate(key, param, Operator.LESS_THAN_OR_EQUAL) )
+
+        return this
+    }
+
     or(alias: string, param: string, operator?: Operator) : WhereStatement {
         this.predicates.push( new Predicate(alias, param, operator, Prefix.OR) )
 

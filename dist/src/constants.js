@@ -45,6 +45,7 @@ var StatementPrefix;
     StatementPrefix["MATCH"] = "MATCH";
     StatementPrefix["OPTIONAL_MATCH"] = "OPTIONAL MATCH";
     StatementPrefix["WITH"] = "WITH";
+    StatementPrefix["CALL"] = "CALL";
     StatementPrefix["CREATE"] = "CREATE";
     StatementPrefix["MERGE"] = "MERGE";
     StatementPrefix["DETACH_DELETE"] = "DETACH DELETE";

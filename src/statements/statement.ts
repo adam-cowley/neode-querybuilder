@@ -6,24 +6,27 @@ import OrderBy from './order-by';
 import Relationship from '../relationship';
 import Property from '../property';
 import SetProperty from './set-property';
+import CallStatement from './call-statement';
 
 export default class Statement<T> {
 
-    private prefix: StatementPrefix;
+    private prefix: StatementPrefix
 
-    private deleteValues: string[] = [];
+    private deleteValues: string[] = []
 
-    private detachDeleteValues: string[] = [];
+    private detachDeleteValues: string[] = []
 
-    private removeValues: string[] = [];
+    private removeValues: string[] = []
 
-    private onCreateSetValues: SetProperty[] = [];
+    private onCreateSetValues: SetProperty[] = []
 
-    private onMatchSetValues: SetProperty[] = [];
+    private onMatchSetValues: SetProperty[] = []
     
-    private setValues: SetProperty[] = [];
+    private setValues: SetProperty[] = []
 
-    private returnValues: string[] = [];
+    private returnValues: string[] = []
+
+    private yieldValues: string[] = []
 
     // TODO: replace any
     private pattern: any[] = [];
@@ -44,12 +47,28 @@ export default class Statement<T> {
         return this.predicates[ this.predicates.length - 1 ]
     }
 
-    with(items: string[]) {
-        this.pattern.push( new WithStatement(items) )
+    call(fn: string, ...parameters: any[]) {
+        this.pattern.push( new CallStatement(fn, parameters) )
+
+        return this
     }
 
-    match(alias: string | undefined, labels: any, properties: any) : void {
+    yield(...items: string[]) : Statement<T> {
+        this.yieldValues = this.yieldValues.concat(items)
+
+        return this
+    }
+
+    with(items: string[]) : Statement<T> {
+        this.pattern.push( new WithStatement(items) )
+
+        return this
+    }
+
+    match(alias: string | undefined, labels: any, properties: any) : Statement<T> {
         this.pattern.push( new MatchStatement(alias, labels, properties) )
+
+        return this
     }
 
     relationship(type: string | string[], direction?: Direction, alias?: string | null, properties?: Property[], degrees?: number | string) : Statement<T> {
@@ -63,6 +82,8 @@ export default class Statement<T> {
         
         return this
     }
+
+
 
     delete(...values: string[]) : Statement<T>{
         this.deleteValues = this.deleteValues.concat(values)
@@ -138,6 +159,78 @@ export default class Statement<T> {
         return this
     }
 
+    whereLike(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereLike(key, param)
+
+        return this
+    }
+
+    whereNotLike(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereNotLike(key, param)
+
+        return this
+    }
+
+    whereStartsWith(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereStartsWith(key, param)
+
+        return this
+    }
+
+    whereNotStartsWith(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereNotStartsWith(key, param)
+
+        return this
+    }
+
+    whereEndsWith(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereEndsWith(key, param)
+
+        return this
+    }
+
+    whereNotEndsWith(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereNotEndsWith(key, param)
+
+        return this
+    }
+
+    whereContains(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereContains(key, param)
+
+        return this
+    }
+
+    whereNotContains(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereNotContains(key, param)
+
+        return this
+    }
+
+    whereGreaterThan(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereGreaterThan(key, param)
+
+        return this
+    }
+
+    whereGreaterThanOrEqual(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereGreaterThanOrEqual(key, param)
+
+        return this
+    }
+
+    whereLessThan(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereLessThan(key, param)
+
+        return this
+    }
+
+    whereLessThanOrEqual(key: string, param: string) : Statement<T> {
+        this.lastPredicate().whereLessThanOrEqual(key, param)
+
+        return this
+    }
+
     orderBy(key: string, order: Order = Order.ASC) : Statement<T> {
         this.order.push( new OrderBy(key, order) )
 
@@ -166,6 +259,11 @@ export default class Statement<T> {
             output.push(
                 `${this.prefix} ${this.pattern.map(value => value.toString()).join('')}`
             )
+        }
+
+        // Yield?
+        if ( this.yieldValues.length ) {
+            output.push(`YIELD ${this.yieldValues.map(value => value.toString()).join(', ')}`)
         }
 
         // Where clauses
@@ -227,7 +325,7 @@ export default class Statement<T> {
 
         // Limit
         if ( this.limitRows !== undefined ) {
-            output.push(`LIMIT ${this.skipRows}`)
+            output.push(`LIMIT ${this.limitRows}`)
         }
 
         return output.join('\n');

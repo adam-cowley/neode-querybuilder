@@ -43,6 +43,7 @@ export enum StatementPrefix {
     MATCH = 'MATCH',
     OPTIONAL_MATCH = 'OPTIONAL MATCH',
     WITH = 'WITH',
+    CALL = 'CALL',
 
     CREATE = "CREATE",
     MERGE = "MERGE",

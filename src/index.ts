@@ -1,10 +1,10 @@
 import Builder from './builder/builder'
 
-export default Builder
+export { default as WhereStatement } from './statements/where-statement'
 
-export { 
-    Condition,
-    Operator,
-    Prefix,
-    StatementPrefix,
+export {     
+    Direction,
+    Order,
 } from './constants'
+
+export default Builder
