@@ -1,19 +1,18 @@
-import Builder, { Direction, WhereStatement, } from '../src'
+const Builder = require('../dist').default
+const { Direction, WhereStatement, } = require('../dist')
 
-function builder() : Builder<any> {
+function builder() /* : Builder<any> */ {
     return new Builder()
 }
 
-
 /**
  * Find an actor and 10 movies that they've acted in
- * 
+ *
  * MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
  * WHERE m.released >= 2003
  * RETURN p, m
  * LIMIT 10
  */
-
 const actorAndMovies = builder()
     .match('p', 'Person', { name: 'Keanu Reeves' })
     .relationship('ACTED_IN', Direction.OUTGOING)
@@ -38,8 +37,6 @@ console.log(actorAndMovies.getParams()) // { p_name: 'Keanu Reeves', m_released:
  * RETURN p, m
  * LIMIT 10
  */
-
-
 const complexWhere = builder()
 
 // First add the parameters to the builder
@@ -72,7 +69,7 @@ console.log(complexWhere.getParams()) // { matrixReleasedAfter: 2000, atlasRelea
 
 /**
  * APOC Periodic Iterate
- * 
+ *
  * CALL apoc.periodic.iterate("MATCH (n) RETURN n", "DETACH DELETE n", {iterateList: true, parallel: true, batchSize: 1000})
  * YIELD total, batches, timeTaken
  * WHERE (total > $total)
