@@ -121,7 +121,7 @@ describe('Builder', () => {
 
                 const cypher = builder
                     .match('this', 'Node').whereId('this', 1)
-                    .match('that', 'Node').whereId('that', 2)                
+                    .match('that', 'Node').whereId('that', 2)
                     .return('this', 'that')
                     .toString()
 
@@ -173,7 +173,7 @@ describe('Builder', () => {
                     .whereLike('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (n.prop LIKE $n_prop)',
@@ -191,7 +191,7 @@ describe('Builder', () => {
                     .whereNotLike('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (NOT n.prop LIKE $n_prop)',
@@ -209,7 +209,7 @@ describe('Builder', () => {
                     .whereStartsWith('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (n.prop STARTS WITH $n_prop)',
@@ -227,7 +227,7 @@ describe('Builder', () => {
                     .whereNotStartsWith('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (NOT n.prop STARTS WITH $n_prop)',
@@ -245,7 +245,7 @@ describe('Builder', () => {
                     .whereEndsWith('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (n.prop ENDS WITH $n_prop)',
@@ -263,7 +263,7 @@ describe('Builder', () => {
                     .whereNotEndsWith('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (NOT n.prop ENDS WITH $n_prop)',
@@ -281,7 +281,7 @@ describe('Builder', () => {
                     .whereContains('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (n.prop CONTAINS $n_prop)',
@@ -299,7 +299,7 @@ describe('Builder', () => {
                     .whereNotContains('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (NOT n.prop CONTAINS $n_prop)',
@@ -317,7 +317,7 @@ describe('Builder', () => {
                     .whereGreaterThan('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (n.prop > $n_prop)',
@@ -335,7 +335,7 @@ describe('Builder', () => {
                     .whereGreaterThanOrEqual('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (n.prop >= $n_prop)',
@@ -353,7 +353,7 @@ describe('Builder', () => {
                     .whereLessThan('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (n.prop < $n_prop)',
@@ -371,7 +371,7 @@ describe('Builder', () => {
                     .whereLessThanOrEqual('n.prop', 'value')
                     .return('n')
                     .toString()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (n.prop <= $n_prop)',
@@ -389,7 +389,7 @@ describe('Builder', () => {
                     .whereBetween('n.prop', 1, 10)
                     .return('n')
                     .build()
-        
+
                 expect(cypher).toBe([
                     'MATCH (n)',
                     'WHERE (n.prop BETWEEN $n_prop AND $n_prop2)',
@@ -397,7 +397,7 @@ describe('Builder', () => {
                 ].join('\n'))
 
                 expect(params).toEqual({
-                    n_prop: int(1), 
+                    n_prop: int(1),
                     n_prop2: int(10) ,
                 })
             })
@@ -497,14 +497,14 @@ describe('Builder', () => {
                     .match('this', 'Node')
                     .return('this')
                     .skip(10)
-                    .limit(10)
+                    .limit(20)
                     .build();
-
+console.log(cypher)
                     expect(cypher).toBe([
                         `MATCH (this:Node)`,
                         `RETURN this`,
                         `SKIP 10`,
-                        `LIMIT 10`,
+                        `LIMIT 20`,
                     ].join('\n'))
             })
         })
@@ -519,7 +519,7 @@ describe('Builder', () => {
                     .where('this.id', 1)
                     .return('this')
                     .skip(10)
-                    .limit(10)
+                    .limit(20)
                     .build();
 
                     expect(cypher).toBe([
@@ -528,7 +528,7 @@ describe('Builder', () => {
                     `WHERE (this.id = $this_id)`,
                     `RETURN this`,
                     `SKIP 10`,
-                    `LIMIT 10`,
+                    `LIMIT 20`,
                 ].join('\n'))
             })
         })
@@ -702,7 +702,7 @@ describe('Builder', () => {
                     `MATCH (this:Node)-[n:REL*3]-(that:Node)`,
                     `RETURN this, that`,
                 ].join('\n'))
-            
+
             })
             test('should build a pattern with multiple relationship types', () => {
                 const builder = new Builder()
@@ -777,7 +777,7 @@ describe('Builder', () => {
                 .where('this', 'this')
                 .or('that', 'that')
 
-            
+
             const builder = new Builder()
 
             const { cypher, params } = builder
@@ -956,7 +956,7 @@ describe('Builder', () => {
                     `ON MATCH SET n.updatedAt = $n_updatedAt`,
                     `SET n.prop = $n_prop`,
                 ].join('\n'))
-        
+
             })
         it('should accept multiple ON MATCH SET, ON CREATE SET AND SET statements', () => {
             const builder = new Builder()
