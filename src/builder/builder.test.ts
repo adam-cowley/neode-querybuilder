@@ -499,7 +499,7 @@ describe('Builder', () => {
                     .skip(10)
                     .limit(20)
                     .build();
-console.log(cypher)
+
                     expect(cypher).toBe([
                         `MATCH (this:Node)`,
                         `RETURN this`,
