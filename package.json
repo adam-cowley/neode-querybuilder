@@ -1,6 +1,6 @@
 {
   "name": "@neode/querybuilder",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Fluent Cypher Query Builder for NodeJS - As used in Neode",
   "main": "dist/index.js",
   "scripts": {
