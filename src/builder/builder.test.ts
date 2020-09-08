@@ -1052,7 +1052,7 @@ describe('Builder', () => {
         it('should call some apoc procedure and yield values', () => {
             const builder = new Builder()
 
-            const cypher = builder.match('a')
+            const { cypher, params } = builder.match('a')
                 .foreach(
                     'n',
                     [1,2,3],
@@ -1061,7 +1061,7 @@ describe('Builder', () => {
                         .merge('a').relationship('KNOWS').to('b')
                 )
                 .return('a')
-                .toString()
+                .build()
 
             expect(cypher).toEqual([
                 `MATCH (a)`,
@@ -1069,6 +1069,10 @@ describe('Builder', () => {
                 `MERGE (a)-[:KNOWS]-(b) )`,
                 `RETURN a`
             ].join('\n'))
+
+            expect(params).toEqual({
+                'n': [1, 2, 3]
+            })
         })
     })
 })
