@@ -1,11 +1,12 @@
 import { Operator } from './constants'
+import Raw from './raw';
 
 export default class Property {
     private key: string;
-    private param: string | null;
+    private param: string | Raw | null;
     private operator: Operator;
 
-    constructor(key: string, param: string | null, operator: Operator = Operator.EQUALS) {
+    constructor(key: string, param: string | Raw | null, operator: Operator = Operator.EQUALS) {
         this.key = key
         this.param = param
         this.operator = operator;
@@ -16,7 +17,10 @@ export default class Property {
     }
 
     public convertParam(): string {
-        return this.param ? `$${this.param}` : 'null'
+        if ( this.param instanceof Raw ) return this.param.toString()
+        else if ( !this.param ) return 'null'
+
+        return `$${this.param}`
     }
 
     toInlineString() {

@@ -7,6 +7,8 @@ import Relationship from '../relationship';
 import Property from '../property';
 import SetProperty from './set-property';
 import CallStatement from './call-statement';
+import ForeachStatement from './foreach-statement';
+import Builder from '../builder/builder';
 
 export default class Statement<T> {
 
@@ -21,12 +23,14 @@ export default class Statement<T> {
     private onCreateSetValues: SetProperty[] = []
 
     private onMatchSetValues: SetProperty[] = []
-    
+
     private setValues: SetProperty[] = []
 
     private returnValues: string[] = []
 
     private yieldValues: string[] = []
+
+    private foreachStatements: ForeachStatement<T>[] = []
 
     // TODO: replace any
     private pattern: any[] = [];
@@ -79,11 +83,13 @@ export default class Statement<T> {
 
     where(alias: WhereStatement | string, param?: string, operator?: Operator, prefix?: Prefix, negative: boolean = false) : Statement<T> {
         this.lastPredicate().where(alias, param, operator, prefix, negative)
-        
+
         return this
     }
 
-
+    foreach(identifier: string, param: string, query: Builder<T>) {
+        this.foreachStatements.push( new ForeachStatement(identifier, param, query) )
+    }
 
     delete(...values: string[]) : Statement<T>{
         this.deleteValues = this.deleteValues.concat(values)
@@ -99,25 +105,25 @@ export default class Statement<T> {
 
     onCreateSet(key: string, param: string) : Statement<T> {
         this.onCreateSetValues.push( new SetProperty(key, param) )
-        
+
         return this
     }
 
     onMatchSet(key: string, param: string) : Statement<T>  {
         this.onMatchSetValues.push( new SetProperty(key, param) )
-        
+
         return this
     }
 
     set(key: string, param: string) : Statement<T>  {
         this.setValues.push( new SetProperty(key, param) )
-        
+
         return this
     }
 
     setAppend(key: string, param: string) : Statement<T> {
         this.setValues.push( new SetProperty(key, param, SetOperator.APPEND_EQUALS) )
-        
+
         return this
     }
 
@@ -134,13 +140,13 @@ export default class Statement<T> {
 
         return this
     }
-    
+
     whereId(alias: string, param: string, prefix?: Prefix) : Statement<T> {
         this.lastPredicate().whereId(alias, param, prefix)
 
         return this
     }
-    
+
     whereNotId(alias: string, param: string, prefix?: Prefix) : Statement<T> {
         this.lastPredicate().whereNotId(alias, param, prefix)
 
@@ -272,7 +278,7 @@ export default class Statement<T> {
                     .filter(predicate => predicate.length > 0)
                     .map((predicate: WhereStatement) => predicate.toString())
                     .join(`\n`)
-            
+
             if ( where !== '') {
                 output.push(where)
             }
@@ -281,6 +287,11 @@ export default class Statement<T> {
         // Remove Values
         if ( this.removeValues.length ) {
             output.push(`REMOVE ${this.removeValues.map(value => value.toString()).join(', ')}`)
+        }
+
+        // Foreach
+        if ( this.foreachStatements.length ) {
+            output.push(this.foreachStatements.map(statement => statement.toString()).join('\n'))
         }
 
         // On Create Set

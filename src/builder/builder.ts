@@ -3,6 +3,7 @@ import Statement from '../statements/statement'
 import Property from '../property';
 import WhereStatement from '../statements/where-statement';
 import  { Condition, Prefix, StatementPrefix, Order, Direction, Operator } from '../constants'
+import Raw from '../raw';
 
 interface Params {
     [ key: string ]: any
@@ -11,7 +12,7 @@ interface Params {
 export default class Builder<T> {
 
     public params: Params = {};
-    
+
     public statements: Array<Statement<T>> = [];
 
     setParam(key: string, value: any): Builder<T> {
@@ -157,7 +158,7 @@ export default class Builder<T> {
 
         return this
     }
-    
+
     whereRaw(predicate: string) : Builder<T> {
         this.currentStatement().whereRaw(predicate)
 
@@ -295,6 +296,14 @@ export default class Builder<T> {
         return this
     }
 
+    foreach(identifier: string, collection: any[], query: Builder<T>): Builder<T> {
+        const param = this.aliasProperty(null, identifier, collection).getParam()
+
+        this.currentStatement().foreach(identifier, param, query)
+
+        return this
+    }
+
     getParams() : Params {
         return this.params;
     }
@@ -306,12 +315,20 @@ export default class Builder<T> {
         }
     }
 
+    raw(value: any): Raw {
+        return new Raw(value)
+    }
+
     toString() : string {
         return this.statements.map(statement => statement.toString())
             .join('\n')
     }
 
     private aliasProperty(alias: string | null, key: string, value: any) : Property {
+        if ( value instanceof Raw ) {
+            return new Property(key, value as Raw)
+        }
+
         // Create a safe param name
         let param = [alias, key].filter(e => !!e).join('_')
             .replace(/[^a-z0-9_]+/i, '_')
@@ -325,7 +342,7 @@ export default class Builder<T> {
                 key++;
 
                 param = originalParam + key
-            }            
+            }
         }
 
         // Convert it to an int?
@@ -334,7 +351,7 @@ export default class Builder<T> {
         // Set in params
         this.params[ param ] = value
 
-        return new Property(key, param) 
+        return new Property(key, param)
     }
 
     private currentStatement() : Statement<T> {
