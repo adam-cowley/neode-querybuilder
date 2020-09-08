@@ -1049,7 +1049,7 @@ describe('Builder', () => {
     })
 
     describe('::foreach', () => {
-        it('should call some apoc procedure and yield values', () => {
+        it('should write foreach on simple value', () => {
             const builder = new Builder()
 
             const { cypher, params } = builder.match('a')
@@ -1072,6 +1072,35 @@ describe('Builder', () => {
 
             expect(params).toEqual({
                 'n': [1, 2, 3]
+            })
+        })
+
+        it('should write foreach on list of maps', () => {
+            const builder = new Builder()
+
+            const { cypher, params } = builder.match('a')
+                .foreach(
+                    'n',
+                    [{id: 1},{id:2},{id:3}],
+                    (new Builder())
+                        .merge('b', 'Test', { id: builder.raw('n.id') })
+                        .onCreateSet('b.foo', builder.raw('n.foo'))
+                        .onCreateSet('b.bar', builder.raw('n.bar'))
+                        .merge('a').relationship('KNOWS').to('b')
+                )
+                .return('a')
+                .build()
+
+            expect(cypher).toEqual([
+                `MATCH (a)`,
+                `FOREACH ( n IN $n | MERGE (b:Test {id: n.id})`,
+                `ON CREATE SET b.foo = n.foo, b.bar = n.bar`,
+                `MERGE (a)-[:KNOWS]-(b) )`,
+                `RETURN a`
+            ].join('\n'))
+
+            expect(params).toEqual({
+                'n': [{id: 1}, {id: 2}, {id: 3}]
             })
         })
     })
