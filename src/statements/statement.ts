@@ -165,6 +165,12 @@ export default class Statement<T> {
         return this
     }
 
+    whereNotBetween(key: string, floor: string, ceiling: string, floorInclusive = true, ceilingInclusive = true, prefix?: Prefix) : Statement<T> {
+        this.lastPredicate().whereNotBetween(key, floor, ceiling, floorInclusive, ceilingInclusive, prefix)
+
+        return this
+    }
+
     whereLike(key: string, param: string) : Statement<T> {
         this.lastPredicate().whereLike(key, param)
 

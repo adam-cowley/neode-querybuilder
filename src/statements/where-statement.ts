@@ -65,6 +65,12 @@ export default class WhereStatement {
         return this
     }
 
+    whereNotBetween(alias: string, floor: string, ceiling: string, floorInclusive = true, ceilingInclusive = true, prefix?: Prefix) : WhereStatement {
+        this.predicates.push( new WhereBetween(alias, floor, ceiling, floorInclusive, ceilingInclusive, prefix).setNegative() )
+
+        return this
+    }
+
     whereLike(key: string, param: string) : WhereStatement {
         this.predicates.push( new Predicate(key, param, Operator.LIKE) )
 

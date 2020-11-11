@@ -443,6 +443,29 @@ describe('Builder', () => {
             })
         })
 
+        describe('::whereNotBetween', () => {
+            it('should build a not between clause', () => {
+                const builder = new Builder()
+
+                const { cypher, params } = builder
+                    .match('n')
+                    .whereNotBetween('n.prop', 1, 10)
+                    .return('n')
+                    .build()
+
+                expect(cypher).toBe([
+                    'MATCH (n)',
+                    'WHERE (NOT (n.prop >= $n_prop AND n.prop <= $n_prop2))',
+                    'RETURN n'
+                ].join('\n'))
+
+                expect(params).toEqual({
+                    n_prop: int(1),
+                    n_prop2: int(10) ,
+                })
+            })
+        })
+
         describe('::or', () => {
             test('should build an `or` query', () => {
                 const builder = new Builder();
