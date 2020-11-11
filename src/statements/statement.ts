@@ -159,8 +159,8 @@ export default class Statement<T> {
         return this
     }
 
-    whereBetween(key: string, floor: string, ceiling: string) : Statement<T> {
-        this.lastPredicate().whereBetween(key, floor, ceiling)
+    whereBetween(key: string, floor: string, ceiling: string, floorInclusive = true, ceilingInclusive = true, prefix?: Prefix) : Statement<T> {
+        this.lastPredicate().whereBetween(key, floor, ceiling, floorInclusive, ceilingInclusive, prefix)
 
         return this
     }
