@@ -380,7 +380,7 @@ describe('Builder', () => {
             })
         })
 
-        describe('::between', () => {
+        describe('::whereBetween', () => {
             it('should build a between clause', () => {
                 const builder = new Builder()
 
@@ -392,7 +392,70 @@ describe('Builder', () => {
 
                 expect(cypher).toBe([
                     'MATCH (n)',
-                    'WHERE (n.prop BETWEEN $n_prop AND $n_prop2)',
+                    'WHERE (n.prop >= $n_prop AND n.prop <= $n_prop2)',
+                    'RETURN n'
+                ].join('\n'))
+
+                expect(params).toEqual({
+                    n_prop: int(1),
+                    n_prop2: int(10) ,
+                })
+            })
+            it('should respect floorInclusive', () => {
+                const builder = new Builder()
+
+                const { cypher, params } = builder
+                    .match('n')
+                    .whereBetween('n.prop', 1, 10, false)
+                    .return('n')
+                    .build()
+
+                expect(cypher).toBe([
+                    'MATCH (n)',
+                    'WHERE (n.prop > $n_prop AND n.prop <= $n_prop2)',
+                    'RETURN n'
+                ].join('\n'))
+
+                expect(params).toEqual({
+                    n_prop: int(1),
+                    n_prop2: int(10) ,
+                })
+            })
+            it('should respect ceilingInclusive', () => {
+                const builder = new Builder()
+
+                const { cypher, params } = builder
+                    .match('n')
+                    .whereBetween('n.prop', 1, 10, true, false)
+                    .return('n')
+                    .build()
+
+                expect(cypher).toBe([
+                    'MATCH (n)',
+                    'WHERE (n.prop >= $n_prop AND n.prop < $n_prop2)',
+                    'RETURN n'
+                ].join('\n'))
+
+                expect(params).toEqual({
+                    n_prop: int(1),
+                    n_prop2: int(10) ,
+                })
+            })
+        })
+
+        describe('::whereNotBetween', () => {
+            it('should build a not between clause', () => {
+                const builder = new Builder()
+
+                const { cypher, params } = builder
+                    .match('n')
+                    .whereNotBetween('n.prop', 1, 10)
+                    .return('n')
+                    .build()
+
+                expect(cypher).toBe([
+                    'MATCH (n)',
+                    'WHERE (NOT (n.prop >= $n_prop AND n.prop <= $n_prop2))',
                     'RETURN n'
                 ].join('\n'))
 

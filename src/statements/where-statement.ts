@@ -59,8 +59,14 @@ export default class WhereStatement {
         return this
     }
 
-    whereBetween(alias: string, floor: string, ceiling: string) : WhereStatement {
-        this.predicates.push( new WhereBetween(alias, floor, ceiling) )
+    whereBetween(alias: string, floor: string, ceiling: string, floorInclusive = true, ceilingInclusive = true, prefix?: Prefix) : WhereStatement {
+        this.predicates.push( new WhereBetween(alias, floor, ceiling, floorInclusive, ceilingInclusive, prefix) )
+
+        return this
+    }
+
+    whereNotBetween(alias: string, floor: string, ceiling: string, floorInclusive = true, ceilingInclusive = true, prefix?: Prefix) : WhereStatement {
+        this.predicates.push( new WhereBetween(alias, floor, ceiling, floorInclusive, ceilingInclusive, prefix).setNegative() )
 
         return this
     }

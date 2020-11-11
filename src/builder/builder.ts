@@ -237,8 +237,14 @@ export default class Builder<T> {
         return this
     }
 
-    whereBetween(key: string, floor: any, ceiling: any) : Builder<T> {
-        this.currentStatement().whereBetween(key, this.aliasProperty(null, key, floor).getParam(), this.aliasProperty(null, key, ceiling).getParam())
+    whereBetween(key: string, floor: any, ceiling: any, floorInclusive = true, ceilingInclusive = true) : Builder<T> {
+        this.currentStatement().whereBetween(key, this.aliasProperty(null, key, floor).getParam(), this.aliasProperty(null, key, ceiling).getParam(), floorInclusive, ceilingInclusive)
+
+        return this
+    }
+
+    whereNotBetween(key: string, floor: any, ceiling: any, floorInclusive = true, ceilingInclusive = true) : Builder<T> {
+        this.currentStatement().whereNotBetween(key, this.aliasProperty(null, key, floor).getParam(), this.aliasProperty(null, key, ceiling).getParam(), floorInclusive, ceilingInclusive)
 
         return this
     }
